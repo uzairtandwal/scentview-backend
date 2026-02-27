@@ -139,6 +139,16 @@ class ProductController extends Controller
         }
     }
 
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        return Product::with(['images', 'category'])
+            ->where('name', 'LIKE', "%{$query}%")
+            ->orWhere('description', 'LIKE', "%{$query}%")
+            ->orderByDesc('id')
+            ->get();
+    }
+
     public function destroy(Product $product)
     {
         $product->delete();

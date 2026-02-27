@@ -17,6 +17,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            // ✅ ScentView Specific Columns Added Here
+            $table->string('role')->default('user'); // admin or user
+            $table->string('phone_number')->nullable();
+            $table->text('address')->nullable();
+            
             $table->rememberToken();
             $table->timestamps();
         });
