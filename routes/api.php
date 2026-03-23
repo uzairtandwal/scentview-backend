@@ -57,6 +57,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']); // Order mangwane ke liye
     Route::get('/orders', [OrderController::class, 'index']);  // Purane orders dekhne ke liye
 
+    // Admin: Orders Dashboard (New)
+    Route::get('/admin/orders', [OrderController::class, 'adminIndex']);
+    Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus']);
+
     /*
     |--------------------------------------------------------------------------
     | Admin Routes (Sirf Admin ke liye - Dashboard Control)

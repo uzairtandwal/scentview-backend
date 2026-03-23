@@ -106,4 +106,63 @@ class OrderController extends Controller
         $orders = $request->user()->orders()->with('items.product')->latest()->get();
         return response()->json($orders);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin: Get All Orders (New)
+    |--------------------------------------------------------------------------
+    */
+    public function adminIndex()
+    {
+        // Sab users ke orders latest se dikhana
+        $orders = Order::with('user:id,name,email')
+            ->latest()
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'customer_name' => $order->user ? $order->user->name : 'Guest',
+                    'total_amount' => $order->total_amount,
+                    'status' => $order->status,
+                    'created_at' => $order->created_at->format('Y-m-d H:i:s'),
+                    'shipping_address' => $order->shipping_address,
+                    'phone_number' => $order->phone_number,
+                ];
+            });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $orders
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin: Update Order Status (New)
+    |--------------------------------------------------------------------------
+    */
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:Pending,Processing,Shipped,Completed,Cancelled',
+        ]);
+
+        $order = Order::find($id);
+
+        if (!$order) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Order not found'
+            ], 404);
+        }
+
+        $order->status = $request->status;
+        $order->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Order status updated successfully',
+            'data' => $order
+        ]);
+    }
 }
